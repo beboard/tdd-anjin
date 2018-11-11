@@ -5,6 +5,8 @@ services:
     build:
       context: ./services/users
       dockerfile: Dockerfile-dev
+    volumes:
+      - './services/users:/usr/src/app'
     ports:
       - 5252:5000
     environment:
@@ -34,18 +36,20 @@ services:
       - 8080:80
     depends_on:
       - users
+      - client
 
   client:
     build:
       context: ./services/client
       dockerfile: Dockerfile-dev
     volumes:
-      - './services/client:/usr/src/app'
-      - '/usr/src/app/node_modules'
+    - './services/client:/usr/src/app'
+    - '/usr/src/app/node_modules'
     ports:
       - 3007:3000
     environment:
       - NODE_ENV=development
       - REACT_APP_USERS_SERVICE_URL=${REACT_APP_USERS_SERVICE_URL}
+      - CHOKIDAR_USEPOLLING=true
     depends_on:
       - users
